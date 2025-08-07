@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Πακαλεάνου Χάρτης με Αριθμημένες Πινέζες</title>
+    <style>
+        #map {
+            height: 500px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script>
+        function initMap() {
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 12,
+                center: { lat: 37.9838, lng: 23.7275 }
+            });
+            const locations = [
+                { lat: 37.9838, lng: 23.7275, title: "Ακρόπολη", label: "1" },
+                { lat: 37.9715, lng: 23.7257, title: "Μοναστηράκι", label: "2" },
+                { lat: 37.9756, lng: 23.7348, title: "Σύνταγμα", label: "3" }
+            ];
+            locations.forEach(location => {
+                new google.maps.Marker({
+                    position: { lat: location.lat, lng: location.lng },
+                    map: map,
+                    title: location.title,
+                    label: {
+                        text: location.label,
+                        color: "black",
+                        fontSize: "14px",
+                        fontWeight: "bold"
+                    }
+                });
+            });
+        }
+    </script>
+    <script async
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBGNEgkzo-9QKOAvy2fo7fVGSnmqviyKcM&callback=initMap">
+    </script>
+</body>
+</html>

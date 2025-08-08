@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Χάρτης με Πίνακα</title>
+    <title>Χάρτης Πακαλεάνου - Γιάννος</title>
     <style>
         #map {
-            height: 70%px;
+            height: 70%;
             width: 100%;
         }
         /* Στυλ για τον πίνακα */
@@ -29,6 +29,10 @@
         tr:hover {
             background-color: #f5f5f5;
         }
+        /* Στυλ για το highlight */
+        .highlighted {
+            background-color: #ffff99 !important; /* Κίτρινο φόντο για τη γραμμή */
+        }
     </style>
 </head>
 <body>
@@ -38,7 +42,7 @@
         <thead>
             <tr>
                 <th>Αριθμός</th>
-                <th>Διεύθυνση</th>
+                <th>Τοποθεσία</th>
                 <th>Γεωγραφικό Πλάτος</th>
                 <th>Γεωγραφικό Μήκος</th>
             </tr>
@@ -58,8 +62,9 @@
                 { lat: 38.1356291, lng: 23.8257552, title: "Νήσων 5", label: "7. 319376" },
                 { lat: 38.09119489386928, lng: 23.794898891564305, title: "Χελιδονούς 81 & Παλλήνης 19Β", label: "10. 400553" }
             ];
+            let currentInfoWindow = null; // Μεταβλητή για το τρέχον InfoWindow
             // Προσθήκη πινέζων στον χάρτη
-            locations.forEach(location => {
+            locations.forEach((location, index) => {
                 const marker = new google.maps.Marker({
                     position: { lat: location.lat, lng: location.lng },
                     map: map,
@@ -75,14 +80,40 @@
                 const infoWindow = new google.maps.InfoWindow({
                     content: `<h3>${location.title}</h3>`
                 });
+                // Event listener για κλικ στην πινέζα
                 marker.addListener("click", () => {
+                    // Κλείσε το προηγούμενο InfoWindow αν υπάρχει
+                    if (currentInfoWindow) {
+                        currentInfoWindow.close();
+                    }
+                    // Άνοιξε το νέο InfoWindow
                     infoWindow.open(map, marker);
+                    currentInfoWindow = infoWindow;
+                    // Highlight τη γραμμή στον πίνακα
+                    document.querySelectorAll("#table-body tr").forEach(row => {
+                        row.classList.remove("highlighted");
+                    });
+                    const row = document.getElementById(`row-${location.label}`);
+                    if (row) {
+                        row.classList.add("highlighted");
+                    }
+                });
+                // Κλείσιμο του InfoWindow και αφαίρεση highlight με κλικ στον χάρτη
+                map.addListener("click", () => {
+                    if (currentInfoWindow) {
+                        currentInfoWindow.close();
+                        currentInfoWindow = null;
+                    }
+                    document.querySelectorAll("#table-body tr").forEach(row => {
+                        row.classList.remove("highlighted");
+                    });
                 });
             });
             // Συμπλήρωση του πίνακα με δεδομένα
             const tableBody = document.getElementById("table-body");
             locations.forEach(location => {
                 const row = document.createElement("tr");
+                row.id = `row-${location.label}`; // Μοναδικό ID για κάθε γραμμή
                 row.innerHTML = `
                     <td>${location.label}</td>
                     <td>${location.title}</td>

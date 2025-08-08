@@ -38,7 +38,7 @@
     <table id="locations-table">
         <thead>
             <tr>
-                <th>ΑΑ</th>                
+                <th>ΑΑ</th>
                 <th>Διεύθυνση</th>
             </tr>
         </thead>
@@ -54,19 +54,18 @@
                 { address: "Λεωφόρος Αγίου Σύλλα 53, Νέα Πεντέλη", title: "Λεωφόρος Αγίου Σύλλα 53, Νέα Πεντέλη", label: "1. 412827" },
                 { address: "Σκουφά 52, Νέα Ερυθραία", title: "Σκουφά 52, Νέα Ερυθραία", label: "2. 403694" },
                 { address: "Αυγής 12, Κηφισιά", title: "Αυγής 12, Κηφισιά", label: "3. 462667" },
-                { address: "Πολυτεχνείου 19Α, Κρυονέρι", title: "Πολυτεχνείου 19Α, Κρυονέρι", label: "4. 478392" }, 
+                { address: "Πολυτεχνείου 19Α, Κρυονέρι", title: "Πολυτεχνείου 19Α, Κρυονέρι", label: "4. 478392" },
                 { address: "Ειρήνης 17Α, Κρυονέρι", title: "Ειρήνης 17Α, Κρυονέρι", label: "5. 220378" },
-                { address: "Καραϊσκάκη 8, Κρυονέρι", title: "Καραϊσκάκη 8, Κρυονέρι", label: "6. 403622" },                
+                { address: "Καραϊσκάκη 8, Κρυονέρι", title: "Καραϊσκάκη 8, Κρυονέρι", label: "6. 403622" },
                 { address: "Νήσων 5, Κρυονέρι", title: "Νήσων 5, Κρυονέρι", label: "7. 319376" },
                 { address: "Λεωφόρος Κρυονερίου 98, Κρυονέρι", title: "Λεωφόρος Κρυονερίου 98, Κρυονέρι", label: "8. 415599" },
-                { address: "Δάφνης 18-20, Κρυονέρι", title: "Δάφνης 18-20, Κρυονέρι", label: "9. 399608" },            
-                { address: "Παλλήνης 19Β, Κηφισιά", title: "Παλλήνης 19Β, Κηφισιά", label: "10. 400553" }  
+                { address: "Δάφνης 18-20, Κρυονέρι", title: "Δάφνης 18-20, Κρυονέρι", label: "9. 399608" },
+                { address: "Παλλήνης 19Β, Κηφισιά", title: "Παλλήνης 19Β, Κηφισιά", label: "10. 400553" }
             ];
             let currentInfoWindow = null;
-            
             let currentMarker = null;
             const markers = [];
-            // Προεπιλεγμένο και μεγενθυμένο εικονίδιο πινέζας
+            // Εικονίδια πινέζας
             const defaultIcon = {
                 url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
                 scaledSize: new google.maps.Size(32, 32),
@@ -74,10 +73,9 @@
             };
             const enlargedIcon = {
                 url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
-                scaledSize: new google.maps.Size(38.4, 38.4), // 20% μεγαλύτερο (32 * 1.2)
+                scaledSize: new google.maps.Size(38.4, 38.4), // 20% μεγαλύτερο
                 labelOrigin: new google.maps.Point(19.2, 48)
             };
-            
             // Συνάρτηση για geocoding
             function geocodeAddress(address, callback) {
                 const geocoder = new google.maps.Geocoder();
@@ -92,57 +90,7 @@
             }
             // Προσθήκη πινέζων
             locations.forEach((location, index) => {
-                if (location.lat && location.lng) {
-                    // Χρήση συντεταγμένων αν υπάρχουν
-                    const marker = new google.maps.Marker({
-                        position: { lat: location.lat, lng: location.lng },
-                        map: map,
-                        title: location.title,
-                        label: {
-                            text: location.label,
-                            color: "black",
-                            fontSize: "14px",
-                            fontWeight: "bold"
-                        },
-                        icon: defaultIcon
-                    });
-                    markers.push(marker);
-                    const infoWindow = new google.maps.InfoWindow({
-                        content: `<h3>${location.title}</h3>`
-                    });
-                    marker.addListener("click", () => {
-                        if (currentInfoWindow) {
-                            currentInfoWindow.close();
-                        }
-                        // Επαναφορά όλων των πινέζων στο κανονικό μέγεθος
-                        markers.forEach(m => m.setIcon(defaultIcon));
-                        // Μεγέθυνση της επιλεγμένης πινέζας
-                        marker.setIcon(enlargedIcon);
-                        currentMarker = marker;
-                        
-                        infoWindow.open(map, marker);
-                        currentInfoWindow = infoWindow;
-                        document.querySelectorAll("#table-body tr").forEach(row => {
-                            row.classList.remove("highlighted");
-                        });
-                        const row = document.getElementById(`row-${location.label}`);
-                        if (row) {
-                            row.classList.add("highlighted");
-                        }
-                    });
-                    map.addListener("click", () => {
-                        if (currentInfoWindow) {
-                            currentInfoWindow.close();
-                            currentInfoWindow = null;
-                        }
-                        markers.forEach(m => m.setIcon(defaultIcon));
-                        currentMarker = null;
-                        document.querySelectorAll("#table-body tr").forEach(row => {
-                            row.classList.remove("highlighted");
-                        });
-                    });
-                } else if (location.address) {
-                    // Χρήση Geocoding για διεύθυνση
+                if (location.address && typeof location.address === 'string') {
                     geocodeAddress(location.address, (coords) => {
                         if (coords) {
                             const marker = new google.maps.Marker({
@@ -154,8 +102,10 @@
                                     color: "black",
                                     fontSize: "14px",
                                     fontWeight: "bold"
-                                }
+                                },
+                                icon: defaultIcon
                             });
+                            markers.push(marker); // Προσθήκη στον πίνακα markers
                             const infoWindow = new google.maps.InfoWindow({
                                 content: `<h3>${location.title}</h3>`
                             });
@@ -163,8 +113,14 @@
                                 if (currentInfoWindow) {
                                     currentInfoWindow.close();
                                 }
-                                // infoWindow.open(map, marker); ανοίγει το label της πινέζας
+                                // Επαναφορά όλων των πινέζων
+                                markers.forEach(m => m.setIcon(defaultIcon));
+                                // Μεγέθυνση της επιλεγμένης πινέζας
+                                marker.setIcon(enlargedIcon);
+                                currentMarker = marker;
+                                infoWindow.open(map, marker);
                                 currentInfoWindow = infoWindow;
+                                // Highlight στον πίνακα
                                 document.querySelectorAll("#table-body tr").forEach(row => {
                                     row.classList.remove("highlighted");
                                 });
@@ -173,18 +129,21 @@
                                     row.classList.add("highlighted");
                                 }
                             });
-                            map.addListener("click", () => {
-                                if (currentInfoWindow) {
-                                    currentInfoWindow.close();
-                                    currentInfoWindow = null;
-                                }
-                                document.querySelectorAll("#table-body tr").forEach(row => {
-                                    row.classList.remove("highlighted");
-                                });
-                            });
                         }
                     });
                 }
+            });
+            // Επαναφορά με κλικ στον χάρτη (εκτός πινέζας)
+            map.addListener("click", () => {
+                if (currentInfoWindow) {
+                    currentInfoWindow.close();
+                    currentInfoWindow = null;
+                }
+                markers.forEach(m => m.setIcon(defaultIcon));
+                currentMarker = null;
+                document.querySelectorAll("#table-body tr").forEach(row => {
+                    row.classList.remove("highlighted");
+                });
             });
             // Συμπλήρωση του πίνακα
             const tableBody = document.getElementById("table-body");
@@ -192,7 +151,7 @@
                 const row = document.createElement("tr");
                 row.id = `row-${location.label}`;
                 row.innerHTML = `
-                    <td>${location.label}</td>   
+                    <td>${location.label}</td>
                     <td>${location.address && typeof location.address === 'string' ? location.address : 'N/A'}</td>
                 `;
                 tableBody.appendChild(row);
@@ -204,3 +163,7 @@
     </script>
 </body>
 </html>
+
+
+        
+  

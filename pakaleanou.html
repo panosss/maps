@@ -157,7 +157,9 @@
                                 if (row) {
                                     row.classList.add("highlighted");
                                     // Αυτόματη κύλιση για να γίνει η σειρά ορατή
-                                    row.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                    setTimeout(() => {
+                                        row.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                    }, 100); // Μικρή καθυστέρηση για σταθερότητα
                                 }
                             });
                         }

@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Χάρτης Πακαλεάνου - Γιάννος</title>
+<title>Χάρτης Πακαλεάνου - Γιάννος</title>
     <style>
         #map {
             height: 700px;
             width: 100%;
+        }
+        .table-container {
+            max-height: 300px; /* Μέγιστο ύψος πίνακα, προσαρμόσιμο */
+            overflow-y: auto; /* Ενεργοποίηση κάθετου scroll bar */
+            width: 100%;
+            position: relative;
         }
         table {
             width: 100%;
@@ -21,29 +27,39 @@
         th {
             background-color: #f2f2f2;
             font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 10; /* Κρατάει τις κεφαλίδες πάνω από το περιεχόμενο */
         }
-        tr:nth-child(even) {
+        td {
+            background-color: #fff; /* Εξασφαλίζει ορατότητα κειμένου */
+        }
+        tr:nth-child(even) td {
             background-color: #f9f9f9;
         }
-        tr:hover {
+        tr:hover td {
             background-color: #f5f5f5;
         }
-        .highlighted {
+        .highlighted td {
             background-color: #ffff99 !important;
         }
     </style>
 </head>
-<body>
+<body> 
+
     <div id="map"></div>
-    <table id="locations-table">
-        <thead>
-            <tr>
-                <th>ΑΑ</th>
-                <th>Διεύθυνση</th>
-            </tr>
-        </thead>
-        <tbody id="table-body"></tbody>
-    </table>
+    <div class="table-container">
+        <table id="locations-table">
+            <thead>
+                <tr>
+                    <th>ΑΑ</th>
+                    <th>Διεύθυνση</th>
+                </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+        </table>
+    </div>
+    
     <script>
         function initMap() {
             const map = new google.maps.Map(document.getElementById("map"), {

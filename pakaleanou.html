@@ -138,7 +138,7 @@
                                 if (currentInfoWindow) {
                                     currentInfoWindow.close();
                                 }
-                                infoWindow.open(map, marker);
+                                // infoWindow.open(map, marker); ανοίγει το label της πινέζας
                                 currentInfoWindow = infoWindow;
                                 document.querySelectorAll("#table-body tr").forEach(row => {
                                     row.classList.remove("highlighted");

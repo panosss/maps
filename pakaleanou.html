@@ -4,7 +4,7 @@
     <title>Χάρτης με Μικτές Τοποθεσίες και Πίνακα</title>
     <style>
         #map {
-            height: 700px;
+            height: 500px;
             width: 100%;
         }
         table {
@@ -40,20 +40,28 @@
             <tr>
                 <th>Αριθμός</th>
                 <th>Τοποθεσία</th>
-                <th>Πληροφορίες Τοποθεσίας</th>
+                <th>Γεωγραφικό Πλάτος</th>
+                <th>Γεωγραφικό Μήκος</th>
+                <th>Διεύθυνση</th>
             </tr>
         </thead>
         <tbody id="table-body"></tbody>
     </table>
-    <phonescript>
+    <script>
         function initMap() {
             const map = new google.maps.Map(document.getElementById("map"), {
                 zoom: 12,
-                center: { lat: 38.1356291, lng: 23.8257552 } // Κέντρο στην πρώτη τοποθεσία
+                center: { lat: 38.1356291, lng: 23.8257552 } // Κέντρο στον Κρυονέρι
             });
             const locations = [
+                { lat: 38.0613835, lng: 23.8523854, title: "Λεωφόρος Αγίου Σύλλα 53, Νέα Πεντέλη", label: "1. 412827" },
+                { lat: 38.0946358, lng: 23.810834, title: "Σκουφά 52, Νέα Ερυθραία", label: "2. 403694" },
+                { lat: 38.094264, lng: 23.8050627, title: "Αυγής 12, Κηφισιά", label: "3. 462667" },
+                { lat: 38.13649274454756, lng: 23.833208653442384, title: "Πολυτεχνείου 19α, Κρυονέρι", label: "4. 478392" }, 
+                { lat: 38.13362179999999, lng: 23.8265802, title: "Ειρήνης 17Α, Κρυονέρι", label: "5. 220378" },
+                { lat: 38.13681709355523, lng: 23.82896435683359, title: "Καραϊσκάκη 8, Κρυονέρι", label: "6. 403622" },                
                 { lat: 38.1356291, lng: 23.8257552, title: "Νήσων 5, Κρυονέρι", label: "7. 319376" },
-                { address: "Παλλήνης 19Β, Κηφισιά", title: "Παλλήνης 19Β, Κηφισιά", label: "10. 400553" }
+                { address: "Παλλήνης 19Β, Κηφισιά", title: "Παλλήνης 19Β, Κηφισιά", label: "10. 400553" }  
             ];
             let currentInfoWindow = null;
             // Συνάρτηση για geocoding
@@ -68,72 +76,103 @@
                     }
                 });
             }
-            // Προσθήκη πινέζων και συμπλήρωση πίνακα
+            // Προσθήκη πινέζων
             locations.forEach((location, index) => {
-                // Λειτουργία για προσθήκη πινέζας
-                const addMarker = (coords) => {
-                    if (coords) {
-                        const marker = new google.maps.Marker({
-                            position: coords,
-                            map: map,
-                            title: location.title,
-                            label: {
-                                text: location.label,
-                                color: "black",
-                                fontSize: "14px",
-                                fontWeight: "bold"
-                            }
+                if (location.lat && location.lng) {
+                    // Χρήση συντεταγμένων αν υπάρχουν
+                    const marker = new google.maps.Marker({
+                        position: { lat: location.lat, lng: location.lng },
+                        map: map,
+                        title: location.title,
+                        label: {
+                            text: location.label,
+                            color: "black",
+                            fontSize: "14px",
+                            fontWeight: "bold"
+                        }
+                    });
+                    const infoWindow = new google.maps.InfoWindow({
+                        content: `<h3>${location.title}</h3>`
+                    });
+                    marker.addListener("click", () => {
+                        if (currentInfoWindow) {
+                            currentInfoWindow.close();
+                        }
+                        infoWindow.open(map, marker);
+                        currentInfoWindow = infoWindow;
+                        document.querySelectorAll("#table-body tr").forEach(row => {
+                            row.classList.remove("highlighted");
                         });
-                        const infoWindow = new google.maps.InfoWindow({
-                            content: `<h3>${location.title}</h3>`
+                        const row = document.getElementById(`row-${location.label}`);
+                        if (row) {
+                            row.classList.add("highlighted");
+                        }
+                    });
+                    map.addListener("click", () => {
+                        if (currentInfoWindow) {
+                            currentInfoWindow.close();
+                            currentInfoWindow = null;
+                        }
+                        document.querySelectorAll("#table-body tr").forEach(row => {
+                            row.classList.remove("highlighted");
                         });
-                        marker.addListener("click", () => {
-                            if (currentInfoWindow) {
-                                currentInfoWindow.close();
-                            }
-                            infoWindow.open(map, marker);
-                            currentInfoWindow = infoWindow;
-                            document.querySelectorAll("#table-body tr").forEach(row => {
-                                row.classList.remove("highlighted");
+                    });
+                } else if (location.address) {
+                    // Χρήση Geocoding για διεύθυνση
+                    geocodeAddress(location.address, (coords) => {
+                        if (coords) {
+                            const marker = new google.maps.Marker({
+                                position: coords,
+                                map: map,
+                                title: location.title,
+                                label: {
+                                    text: location.label,
+                                    color: "black",
+                                    fontSize: "14px",
+                                    fontWeight: "bold"
+                                }
                             });
-                            const row = document.getElementById(`row-${location.label}`);
-                            if (row) {
-                                row.classList.add("highlighted");
-                            }
-                        });
-                        map.addListener("click", () => {
-                            if (currentInfoWindow) {
-                                currentInfoWindow.close();
-                                currentInfoWindow = null;
-                            }
-                            document.querySelectorAll("#table-body tr").forEach(row => {
-                                row.classList.remove("highlighted");
+                            const infoWindow = new google.maps.InfoWindow({
+                                content: `<h3>${location.title}</h3>`
                             });
-                        });
-                    }
-                };
-                // Έλεγχος αν υπάρχει lat/lng ή address
-                if (typeof location.lat === 'number' && location.lat !== null &&
-                    typeof location.lng === 'number' && location.lng !== null) {
-                    addMarker({ lat: location.lat, lng: location.lng });
-                } else if (location.address && typeof location.address === 'string') {
-                    geocodeAddress(location.address, addMarker);
+                            marker.addListener("click", () => {
+                                if (currentInfoWindow) {
+                                    currentInfoWindow.close();
+                                }
+                                infoWindow.open(map, marker);
+                                currentInfoWindow = infoWindow;
+                                document.querySelectorAll("#table-body tr").forEach(row => {
+                                    row.classList.remove("highlighted");
+                                });
+                                const row = document.getElementById(`row-${location.label}`);
+                                if (row) {
+                                    row.classList.add("highlighted");
+                                }
+                            });
+                            map.addListener("click", () => {
+                                if (currentInfoWindow) {
+                                    currentInfoWindow.close();
+                                    currentInfoWindow = null;
+                                }
+                                document.querySelectorAll("#table-body tr").forEach(row => {
+                                    row.classList.remove("highlighted");
+                                });
+                            });
+                        }
+                    });
                 }
-                // Συμπλήρωση του πίνακα
-                const tableBody = document.getElementById("table-body");
+            });
+            // Συμπλήρωση του πίνακα
+            const tableBody = document.getElementById("table-body");
+            locations.forEach(location => {
                 const row = document.createElement("tr");
                 row.id = `row-${location.label}`;
                 row.innerHTML = `
                     <td>${location.label}</td>
                     <td>${location.title}</td>
-                    <td>${
-                        typeof location.lat === 'number' && location.lat !== null &&
-                        typeof location.lng === 'number' && location.lng !== null
-                            ? `${location.lat}, ${location.lng}`
-                            : location.address && typeof location.address === 'string'
-                                ? location.address
-                                : 'N/A'
-                    }</td>
+                    <td>${typeof location.lat === 'number' && location.lat !== null ? location.lat : 'N/A'}</td>
+                    <td>${typeof location.lng === 'number' && location.lng !== null ? location.lng : 'N/A'}</td>
+                    <td>${location.address && typeof location.address === 'string' ? location.address : 'N/A'}</td>
                 `;
                 tableBody.appendChild(row);
             });

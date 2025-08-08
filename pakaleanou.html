@@ -2,9 +2,14 @@
 <html>
 <head>
 <title>Χάρτης Πακαλεάνου - Γιάννος</title>
-    <style>
+<style>
+        html, body {
+            height: 100%; /* Εξασφαλίζει ότι το body έχει ύψος για να υποστηρίξει το vh */
+            margin: 0;
+            padding: 0;
+        }
         #map {
-            height: 700px;
+            height: 70vh; /* 70% του ύψους του viewport */
             width: 100%;
         }
         .table-container {

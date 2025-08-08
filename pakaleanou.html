@@ -165,10 +165,7 @@
                 const row = document.createElement("tr");
                 row.id = `row-${location.label}`;
                 row.innerHTML = `
-                    <td>${location.label}</td>
-                    <td>${location.title}</td>
-                    <td>${typeof location.lat === 'number' && location.lat !== null ? location.lat : 'N/A'}</td>
-                    <td>${typeof location.lng === 'number' && location.lng !== null ? location.lng : 'N/A'}</td>
+                    <td>${location.label}</td>   
                     <td>${location.address && typeof location.address === 'string' ? location.address : 'N/A'}</td>
                 `;
                 tableBody.appendChild(row);

@@ -63,6 +63,21 @@
                 { address: "Παλλήνης 19Β, Κηφισιά", title: "Παλλήνης 19Β, Κηφισιά", label: "10. 400553" }  
             ];
             let currentInfoWindow = null;
+            
+            let currentMarker = null;
+            const markers = [];
+            // Προεπιλεγμένο και μεγενθυμένο εικονίδιο πινέζας
+            const defaultIcon = {
+                url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
+                scaledSize: new google.maps.Size(32, 32),
+                labelOrigin: new google.maps.Point(16, 40)
+            };
+            const enlargedIcon = {
+                url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
+                scaledSize: new google.maps.Size(38.4, 38.4), // 20% μεγαλύτερο (32 * 1.2)
+                labelOrigin: new google.maps.Point(19.2, 48)
+            };
+            
             // Συνάρτηση για geocoding
             function geocodeAddress(address, callback) {
                 const geocoder = new google.maps.Geocoder();
@@ -88,7 +103,8 @@
                             color: "black",
                             fontSize: "14px",
                             fontWeight: "bold"
-                        }
+                        };
+                        icon: defaultIcon
                     });
                     const infoWindow = new google.maps.InfoWindow({
                         content: `<h3>${location.title}</h3>`
@@ -97,6 +113,12 @@
                         if (currentInfoWindow) {
                             currentInfoWindow.close();
                         }
+                        // Επαναφορά όλων των πινέζων στο κανονικό μέγεθος
+                        markers.forEach(m => m.setIcon(defaultIcon));
+                        // Μεγέθυνση της επιλεγμένης πινέζας
+                        marker.setIcon(enlargedIcon);
+                        currentMarker = marker;
+                        
                         infoWindow.open(map, marker);
                         currentInfoWindow = infoWindow;
                         document.querySelectorAll("#table-body tr").forEach(row => {
@@ -112,6 +134,8 @@
                             currentInfoWindow.close();
                             currentInfoWindow = null;
                         }
+                        markers.forEach(m => m.setIcon(defaultIcon));
+                        currentMarker = null;
                         document.querySelectorAll("#table-body tr").forEach(row => {
                             row.classList.remove("highlighted");
                         });

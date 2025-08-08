@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Χάρτης Πακαλεάνου - Γιάννος</title>
-<style>
+    <title>Χάρτης Πακαλεάνου - Γιάννος</title>
+    <style>
         html, body {
             height: 100%; /* Εξασφαλίζει ότι το body έχει ύψος για να υποστηρίξει το vh */
             margin: 0;
@@ -50,8 +50,7 @@
         }
     </style>
 </head>
-<body> 
-
+<body>
     <div id="map"></div>
     <div class="table-container">
         <table id="locations-table">
@@ -64,7 +63,6 @@
             <tbody id="table-body"></tbody>
         </table>
     </div>
-    
     <script>
         function initMap() {
             const map = new google.maps.Map(document.getElementById("map"), {
@@ -140,14 +138,12 @@
                                 if (currentInfoWindow) {
                                     currentInfoWindow.close();
                                 }
-                                // Επαναφορά όλων των πινέζων     
+                                // Επαναφορά όλων των πινέζων
                                 markers.forEach(m => {
                                     m.setIcon(defaultIcon);
-                                    m.setZIndex(0); // Επαναφορά zIndex
+                                    m.setZIndex(0);
                                 });
-
-                                    
-                                // Μεγέθυνση της επιλεγμένης πινέζας
+                                // Μεγέθυνση και προσθήκη zIndex στην επιλεγμένη πινέζα
                                 marker.setIcon(enlargedIcon);
                                 marker.setZIndex(1000); // Φέρνει την πινέζα μπροστά
                                 currentMarker = marker;
@@ -160,7 +156,6 @@
                                 const row = document.getElementById(`row-${location.label}`);
                                 if (row) {
                                     row.classList.add("highlighted");
-                                        
                                     // Αυτόματη κύλιση για να γίνει η σειρά ορατή
                                     row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                                 }
@@ -184,7 +179,7 @@
                     row.classList.remove("highlighted");
                 });
             });
-            // Συμπλήρωση του πίνακα
+            // Συμπλήρωση του πίνακα και προσθήκη κλικ event
             const tableBody = document.getElementById("table-body");
             locations.forEach(location => {
                 const row = document.createElement("tr");
@@ -193,6 +188,37 @@
                     <td>${location.label}</td>
                     <td>${location.address && typeof location.address === 'string' ? location.address : 'N/A'}</td>
                 `;
+                row.addEventListener("click", () => {
+                    // Εύρεση της αντίστοιχης πινέζας
+                    const marker = markers.find(m => m.label.text === location.label);
+                    if (marker) {
+                        if (currentInfoWindow) {
+                            currentInfoWindow.close();
+                        }
+                        // Επαναφορά όλων των πινέζων
+                        markers.forEach(m => {
+                            m.setIcon(defaultIcon);
+                            m.setZIndex(0);
+                        });
+                        // Μεγέθυνση και προσθήκη zIndex στην επιλεγμένη πινέζα
+                        marker.setIcon(enlargedIcon);
+                        marker.setZIndex(1000);
+                        currentMarker = marker;
+                        // Άνοιγμα InfoWindow
+                        const infoWindow = new google.maps.InfoWindow({
+                            content: `<h3>${location.title}</h3>`
+                        });
+                        infoWindow.open(map, marker);
+                        currentInfoWindow = infoWindow;
+                        // Highlight στον πίνακα
+                        document.querySelectorAll("#table-body tr").forEach(r => {
+                            r.classList.remove("highlighted");
+                        });
+                        row.classList.add("highlighted");
+                        // Κεντράρισμα χάρτη στη πινέζα
+                        map.setCenter(marker.getPosition());
+                    }
+                });
                 tableBody.appendChild(row);
             });
         }
@@ -202,7 +228,3 @@
     </script>
 </body>
 </html>
-
-
-        
-  

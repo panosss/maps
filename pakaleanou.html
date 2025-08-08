@@ -120,8 +120,8 @@
                 row.innerHTML = `
                     <td>${location.label}</td>
                     <td>${location.title}</td>
-                    <td>${location.lat}</td>
-                    <td>${location.lng}</td>
+                    <td>${typeof location.lat === 'number' && location.lat !== null ? location.lat : 'N/A'}</td>
+                    <td>${typeof location.lng === 'number' && location.lng !== null ? location.lng : 'N/A'}</td>                    
                 `;
                 tableBody.appendChild(row);
             });

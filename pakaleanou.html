@@ -1,16 +1,50 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Πακαλεάνου Χάρτης με Αριθμημένες Πινέζες</title>
+    <title>Χάρτης με Πίνακα</title>
     <style>
         #map {
-            height: 900px;
+            height: 500px;
             width: 100%;
+        }
+        /* Στυλ για τον πίνακα */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-family: Arial, sans-serif;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
         }
     </style>
 </head>
 <body>
     <div id="map"></div>
+    <!-- Πίνακας κάτω από τον χάρτη -->
+    <table id="locations-table">
+        <thead>
+            <tr>
+                <th>Αριθμός</th>
+                <th>Τοποθεσία</th>
+                <th>Γεωγραφικό Πλάτος</th>
+                <th>Γεωγραφικό Μήκος</th>
+            </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+    </table>
     <script>
         function initMap() {
             const map = new google.maps.Map(document.getElementById("map"), {
@@ -24,8 +58,9 @@
                 { lat: 38.1356291, lng: 23.8257552, title: "Νήσων 5", label: "7. 319376" },
                 { lat: 38.09119489386928, lng: 23.794898891564305, title: "Χελιδονούς 81 & Παλλήνης 19Β", label: "10. 400553" }
             ];
+            // Προσθήκη πινέζων στον χάρτη
             locations.forEach(location => {
-                new google.maps.Marker({
+                const marker = new google.maps.Marker({
                     position: { lat: location.lat, lng: location.lng },
                     map: map,
                     title: location.title,
@@ -36,6 +71,25 @@
                         fontWeight: "bold"
                     }
                 });
+                // Δημιουργία InfoWindow
+                const infoWindow = new google.maps.InfoWindow({
+                    content: `<h3>${location.title}</h3>`
+                });
+                marker.addListener("click", () => {
+                    infoWindow.open(map, marker);
+                });
+            });
+            // Συμπλήρωση του πίνακα με δεδομένα
+            const tableBody = document.getElementById("table-body");
+            locations.forEach(location => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${location.label}</td>
+                    <td>${location.title}</td>
+                    <td>${location.lat}</td>
+                    <td>${location.lng}</td>
+                `;
+                tableBody.appendChild(row);
             });
         }
     </script>

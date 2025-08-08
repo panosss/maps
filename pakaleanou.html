@@ -103,7 +103,8 @@
                                     fontSize: "14px",
                                     fontWeight: "bold"
                                 },
-                                icon: defaultIcon
+                                icon: defaultIcon,
+                                zIndex: 0 // Αρχικό zIndex
                             });
                             markers.push(marker); // Προσθήκη στον πίνακα markers
                             const infoWindow = new google.maps.InfoWindow({
@@ -113,10 +114,16 @@
                                 if (currentInfoWindow) {
                                     currentInfoWindow.close();
                                 }
-                                // Επαναφορά όλων των πινέζων
-                                markers.forEach(m => m.setIcon(defaultIcon));
+                                // Επαναφορά όλων των πινέζων     
+                                markers.forEach(m => {
+                                    m.setIcon(defaultIcon);
+                                    m.setZIndex(0); // Επαναφορά zIndex
+                                });
+
+                                    
                                 // Μεγέθυνση της επιλεγμένης πινέζας
                                 marker.setIcon(enlargedIcon);
+                                marker.setZIndex(1000); // Φέρνει την πινέζα μπροστά
                                 currentMarker = marker;
                                 infoWindow.open(map, marker);
                                 currentInfoWindow = infoWindow;
@@ -139,7 +146,10 @@
                     currentInfoWindow.close();
                     currentInfoWindow = null;
                 }
-                markers.forEach(m => m.setIcon(defaultIcon));
+                markers.forEach(m => {
+                    m.setIcon(defaultIcon);
+                    m.setZIndex(0); // Επαναφορά zIndex
+                });
                 currentMarker = null;
                 document.querySelectorAll("#table-body tr").forEach(row => {
                     row.classList.remove("highlighted");

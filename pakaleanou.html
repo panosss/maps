@@ -52,7 +52,7 @@
 </head>
 <body>
     <div id="map"></div>
-    <div class="table-container">
+    <div class="table-container" id="table-container">
         <table id="locations-table">
             <thead>
                 <tr>
@@ -156,9 +156,11 @@
                                 const row = document.getElementById(`row-${location.label}`);
                                 if (row) {
                                     row.classList.add("highlighted");
-                                    // Αυτόματη κύλιση για να γίνει η σειρά ορατή
+                                    // Αυτόματη κύλιση με scrollTop
+                                    const tableContainer = document.getElementById("table-container");
                                     setTimeout(() => {
-                                        row.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                        const headerHeight = document.querySelector("#locations-table thead").offsetHeight;
+                                        tableContainer.scrollTop = row.offsetTop - headerHeight;
                                     }, 100); // Μικρή καθυστέρηση για σταθερότητα
                                 }
                             });

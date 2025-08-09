@@ -1,5 +1,5 @@
 async function initMap() {
-    let apiKey;
+    let apiKey = 'AIzaSyBGNEgkzo-9QKOAvy2fo7fVGSnmqviyKcM';
     try {
         const response = await fetch('/.netlify/functions/get-api-key');
         const data = await response.json();

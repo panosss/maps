@@ -1,21 +1,7 @@
 
 
-
 async function initMap() {
-    let apiKey;
-    try {
-        const response = await fetch('/.netlify/functions/get-api-key');
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const text = await response.text();
-        console.log("API key response:", text); // Debugging
-        const data = JSON.parse(text);
-        apiKey = data.apiKey;
-    } catch (error) {
-        console.error("Failed to load API key:", error);
-        apiKey = 'AIzaSyBGNEgkzo-9QKOAvy2fo7fVGSnmqviyKcM'; // Αντικατέστησε με το δικό σου Google Maps API key
-    }
+    const apiKey = 'AIzaSyBGNEgkzo-9QKOAvy2fo7fVGSnmqviyKcM'; // Αντικατέστησε με το δικό σου Google Maps API key
 
     const script = document.createElement('script');
     script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMapCallback`;
@@ -31,9 +17,6 @@ async function initMap() {
         let locations = [];
         try {
             const response = await fetch('locations.json');
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
             locations = await response.json();
         } catch (error) {
             console.error("Failed to load locations.json:", error);

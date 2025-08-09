@@ -4,17 +4,17 @@
     <title>Χάρτης Πακαλεάνου - Γιάννος</title>
     <style>
         html, body {
-            height: 100%; /* Εξασφαλίζει ότι το body έχει ύψος για να υποστηρίξει το vh */
+            height: 100%;
             margin: 0;
             padding: 0;
         }
         #map {
-            height: 70vh; /* 70% του ύψους του viewport */
+            height: 70vh;
             width: 100%;
         }
         .table-container {
-            max-height: 300px; /* Μέγιστο ύψος πίνακα, προσαρμόσιμο */
-            overflow-y: auto; /* Ενεργοποίηση κάθετου scroll bar */
+            max-height: 300px;
+            overflow-y: auto;
             width: 100%;
             position: relative;
         }
@@ -34,10 +34,10 @@
             font-weight: bold;
             position: sticky;
             top: 0;
-            z-index: 10; /* Κρατάει τις κεφαλίδες πάνω από το περιεχόμενο */
+            z-index: 10;
         }
         td {
-            background-color: #fff; /* Εξασφαλίζει ορατότητα κειμένου */
+            background-color: #fff;
         }
         tr:nth-child(even) td {
             background-color: #f9f9f9;
@@ -64,171 +64,175 @@
         </table>
     </div>
     <script>
-        function initMap() {
-            const map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 12,
-                center: { lat: 38.1356291, lng: 23.8257552 } // Κέντρο στον Κρυονέρι
-            });
-            const locations = [
-                { address: "Λεωφόρος Αγίου Σύλλα 53, Νέα Πεντέλη", title: "Λεωφόρος Αγίου Σύλλα 53, Νέα Πεντέλη", label: "1. 412827" },
-                { address: "Σκουφά 52, Νέα Ερυθραία", title: "Σκουφά 52, Νέα Ερυθραία", label: "2. 403694" },
-                { address: "Αυγής 12, Κηφισιά", title: "Αυγής 12, Κηφισιά", label: "3. 462667" },
-                { address: "Πολυτεχνείου 19Α, Κρυονέρι", title: "Πολυτεχνείου 19Α, Κρυονέρι", label: "4. 478392" },
-                { address: "Ειρήνης 17Α, Κρυονέρι", title: "Ειρήνης 17Α, Κρυονέρι", label: "5. 220378" },
-                { address: "Καραϊσκάκη 8, Κρυονέρι", title: "Καραϊσκάκη 8, Κρυονέρι", label: "6. 403622" },
-                { address: "Νήσων 5, Κρυονέρι", title: "Νήσων 5, Κρυονέρι", label: "7. 319376" },
-                { address: "Λεωφόρος Κρυονερίου 98, Κρυονέρι", title: "Λεωφόρος Κρυονερίου 98, Κρυονέρι", label: "8. 415599" },
-                { address: "Δάφνης 18-20, Κρυονέρι", title: "Δάφνης 18-20, Κρυονέρι", label: "9. 399608" },
-                { address: "Παλλήνης 19Β, Κηφισιά", title: "Παλλήνης 19Β, Κηφισιά", label: "10. 400553" },
-                { address: "Πρωταγόρα 7, Κηφισιά", title: "Πρωταγόρα 7, Κηφισιά", label: "11. 367472" },
-                { address: "Άργους 48, Κηφισιά", title: "Άργους 48, Κηφισιά", label: "12. 36930" },
-                { address: "Αγγέλου Σικελιανού 53, Κηφισιά", title: "Αγγέλου Σικελιανού 53, Κηφισιά", label: "13. 454403" },
-                { address: "Πάροδος 2η Οθωνος 12, Κηφισιά", title: "Πάροδος 2η Οθωνος 12, Κηφισιά", label: "14. 303946" },
-                { address: "Κέρκυρας & Εθνικής Αντιστάσεως, Νέα Ερυθραία", title: "Κέρκυρας & Εθνικής Αντιστάσεως, Νέα Ερυθραία", label: "15. 469941" }
-            ];
-            let currentInfoWindow = null;
-            let currentMarker = null;
-            const markers = [];
-            // Εικονίδια πινέζας
-            const defaultIcon = {
-                url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
-                scaledSize: new google.maps.Size(32, 32),
-                labelOrigin: new google.maps.Point(16, 40)
-            };
-            const enlargedIcon = {
-                url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
-                scaledSize: new google.maps.Size(41.6, 41.6), // 30% μεγαλύτερο
-                labelOrigin: new google.maps.Point(20.8, 52)
-            };
-            // Συνάρτηση για geocoding
-            function geocodeAddress(address, callback) {
-                const geocoder = new google.maps.Geocoder();
-                geocoder.geocode({ address: address }, (results, status) => {
-                    if (status === "OK") {
-                        callback(results[0].geometry.location);
-                    } else {
-                        console.error("Geocoding failed for address " + address + ": " + status);
-                        callback(null);
-                    }
-                });
+        async function initMap() {
+            // Φόρτωση API key (αντικατέστησε με το δικό σου endpoint ή πρόσθεσε το API key απευθείας)
+            let apiKey;
+            try {
+                const response = await fetch('/.netlify/functions/get-api-key'); // Προσαρμόστε το URL
+                const data = await response.json();
+                apiKey = data.apiKey;
+            } catch (error) {
+                console.error("Failed to load API key:", error);
+                apiKey = 'AIzaSyBGNEgkzo-9QKOAvy2fo7fVGSnmqviyKcM'; // Αντικατέστησε με το API key σου για δοκιμή
             }
-            // Προσθήκη πινέζων
-            locations.forEach((location, index) => {
-                if (location.address && typeof location.address === 'string') {
-                    geocodeAddress(location.address, (coords) => {
-                        if (coords) {
-                            const marker = new google.maps.Marker({
-                                position: coords,
-                                map: map,
-                                title: location.title,
-                                label: {
-                                    text: location.label,
-                                    color: "black",
-                                    fontSize: "14px",
-                                    fontWeight: "bold"
-                                },
-                                icon: defaultIcon,
-                                zIndex: 0 // Αρχικό zIndex
-                            });
-                            markers.push(marker); // Προσθήκη στον πίνακα markers
-                            const infoWindow = new google.maps.InfoWindow({
-                                content: `<h3>${location.title}</h3>`
-                            });
-                            marker.addListener("click", () => {
-                                if (currentInfoWindow) {
-                                    currentInfoWindow.close();
-                                }
-                                // Επαναφορά όλων των πινέζων
-                                markers.forEach(m => {
-                                    m.setIcon(defaultIcon);
-                                    m.setZIndex(0);
-                                });
-                                // Μεγέθυνση και προσθήκη zIndex στην επιλεγμένη πινέζα
-                                marker.setIcon(enlargedIcon);
-                                marker.setZIndex(1000); // Φέρνει την πινέζα μπροστά
-                                currentMarker = marker;
-                                infoWindow.open(map, marker);
-                                currentInfoWindow = infoWindow;
-                                // Highlight στον πίνακα
-                                document.querySelectorAll("#table-body tr").forEach(row => {
-                                    row.classList.remove("highlighted");
-                                });
-                                const row = document.getElementById(`row-${location.label}`);
-                                if (row) {
-                                    row.classList.add("highlighted");
-                                    // Αυτόματη κύλιση με scrollTop
-                                    const tableContainer = document.getElementById("table-container");
-                                    setTimeout(() => {
-                                        const headerHeight = document.querySelector("#locations-table thead").offsetHeight;
-                                        tableContainer.scrollTop = row.offsetTop - headerHeight;
-                                    }, 100); // Μικρή καθυστέρηση για σταθερότητα
-                                }
-                            });
+
+            // Φόρτωση Google Maps API
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMapCallback`;
+            script.async = true;
+            document.head.appendChild(script);
+
+            // Callback για το Google Maps
+            window.initMapCallback = async function() {
+                const map = new google.maps.Map(document.getElementById("map"), {
+                    zoom: 12,
+                    center: { lat: 38.1356291, lng: 23.8257552 }
+                });
+
+                // Φόρτωση δεδομένων από JSON
+                let locations = [];
+                try {
+                    const response = await fetch('locations.json');
+                    locations = await response.json();
+                } catch (error) {
+                    console.error("Failed to load locations.json:", error);
+                    return;
+                }
+
+                let currentInfoWindow = null;
+                let currentMarker = null;
+                const markers = [];
+
+                const defaultIcon = {
+                    url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
+                    scaledSize: new google.maps.Size(32, 32),
+                    labelOrigin: new google.maps.Point(16, 40)
+                };
+                const enlargedIcon = {
+                    url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
+                    scaledSize: new google.maps.Size(41.6, 41.6),
+                    labelOrigin: new google.maps.Point(20.8, 52)
+                };
+
+                function geocodeAddress(address, callback) {
+                    const geocoder = new google.maps.Geocoder();
+                    geocoder.geocode({ address: address }, (results, status) => {
+                        if (status === "OK") {
+                            callback(results[0].geometry.location);
+                        } else {
+                            console.error("Geocoding failed for address " + address + ": " + status);
+                            callback(null);
                         }
                     });
                 }
-            });
-            // Επαναφορά με κλικ στον χάρτη (εκτός πινέζας)
-            map.addListener("click", () => {
-                if (currentInfoWindow) {
-                    currentInfoWindow.close();
-                    currentInfoWindow = null;
-                }
-                markers.forEach(m => {
-                    m.setIcon(defaultIcon);
-                    m.setZIndex(0); // Επαναφορά zIndex
-                });
-                currentMarker = null;
-                document.querySelectorAll("#table-body tr").forEach(row => {
-                    row.classList.remove("highlighted");
-                });
-            });
-            // Συμπλήρωση του πίνακα και προσθήκη κλικ event
-            const tableBody = document.getElementById("table-body");
-            locations.forEach(location => {
-                const row = document.createElement("tr");
-                row.id = `row-${location.label}`;
-                row.innerHTML = `
-                    <td>${location.label}</td>
-                    <td>${location.address && typeof location.address === 'string' ? location.address : 'N/A'}</td>
-                `;
-                row.addEventListener("click", () => {
-                    // Εύρεση της αντίστοιχης πινέζας
-                    const marker = markers.find(m => m.label.text === location.label);
-                    if (marker) {
-                        if (currentInfoWindow) {
-                            currentInfoWindow.close();
-                        }
-                        // Επαναφορά όλων των πινέζων
-                        markers.forEach(m => {
-                            m.setIcon(defaultIcon);
-                            m.setZIndex(0);
+
+                locations.forEach((location, index) => {
+                    if (location.address && typeof location.address === 'string') {
+                        geocodeAddress(location.address, (coords) => {
+                            if (coords) {
+                                const marker = new google.maps.Marker({
+                                    position: coords,
+                                    map: map,
+                                    title: location.title,
+                                    label: {
+                                        text: location.label,
+                                        color: "black",
+                                        fontSize: "14px",
+                                        fontWeight: "bold"
+                                    },
+                                    icon: defaultIcon,
+                                    zIndex: 0
+                                });
+                                markers.push(marker);
+                                const infoWindow = new google.maps.InfoWindow({
+                                    content: `<h3>${location.title}</h3>`
+                                });
+                                marker.addListener("click", () => {
+                                    if (currentInfoWindow) {
+                                        currentInfoWindow.close();
+                                    }
+                                    markers.forEach(m => {
+                                        m.setIcon(defaultIcon);
+                                        m.setZIndex(0);
+                                    });
+                                    marker.setIcon(enlargedIcon);
+                                    marker.setZIndex(1000);
+                                    currentMarker = marker;
+                                    infoWindow.open(map, marker);
+                                    currentInfoWindow = infoWindow;
+                                    document.querySelectorAll("#table-body tr").forEach(row => {
+                                        row.classList.remove("highlighted");
+                                    });
+                                    const row = document.getElementById(`row-${location.label}`);
+                                    if (row) {
+                                        row.classList.add("highlighted");
+                                        const tableContainer = document.getElementById("table-container");
+                                        setTimeout(() => {
+                                            const headerHeight = document.querySelector("#locations-table thead").offsetHeight || 0;
+                                            console.log("row.offsetTop:", row.offsetTop, "headerHeight:", headerHeight);
+                                            tableContainer.scrollTop = row.offsetTop - headerHeight - 20;
+                                        }, 300);
+                                    }
+                                });
+                            }
                         });
-                        // Μεγέθυνση και προσθήκη zIndex στην επιλεγμένη πινέζα
-                        marker.setIcon(enlargedIcon);
-                        marker.setZIndex(1000);
-                        currentMarker = marker;
-                        // Άνοιγμα InfoWindow
-                        const infoWindow = new google.maps.InfoWindow({
-                            content: `<h3>${location.title}</h3>`
-                        });
-                        //sinfoWindow.open(map, marker);
-                        currentInfoWindow = infoWindow;
-                        // Highlight στον πίνακα
-                        document.querySelectorAll("#table-body tr").forEach(r => {
-                            r.classList.remove("highlighted");
-                        });
-                        row.classList.add("highlighted");
-                        // Κεντράρισμα χάρτη στη πινέζα
-                        map.setCenter(marker.getPosition());
                     }
                 });
-                tableBody.appendChild(row);
-            });
+
+                map.addListener("click", () => {
+                    if (currentInfoWindow) {
+                        currentInfoWindow.close();
+                        currentInfoWindow = null;
+                    }
+                    markers.forEach(m => {
+                        m.setIcon(defaultIcon);
+                        m.setZIndex(0);
+                    });
+                    currentMarker = null;
+                    document.querySelectorAll("#table-body tr").forEach(row => {
+                        row.classList.remove("highlighted");
+                    });
+                });
+
+                const tableBody = document.getElementById("table-body");
+                locations.forEach(location => {
+                    const row = document.createElement("tr");
+                    row.id = `row-${location.label}`;
+                    row.innerHTML = `
+                        <td>${location.label}</td>
+                        <td>${location.address && typeof location.address === 'string' ? location.address : 'N/A'}</td>
+                    `;
+                    row.addEventListener("click", () => {
+                        const marker = markers.find(m => m.label.text === location.label);
+                        if (marker) {
+                            if (currentInfoWindow) {
+                                currentInfoWindow.close();
+                            }
+                            markers.forEach(m => {
+                                m.setIcon(defaultIcon);
+                                m.setZIndex(0);
+                            });
+                            marker.setIcon(enlargedIcon);
+                            marker.setZIndex(1000);
+                            currentMarker = marker;
+                            const infoWindow = new google.maps.InfoWindow({
+                                content: `<h3>${location.title}</h3>`
+                            });
+                            infoWindow.open(map, marker);
+                            currentInfoWindow = infoWindow;
+                            document.querySelectorAll("#table-body tr").forEach(r => {
+                                r.classList.remove("highlighted");
+                            });
+                            row.classList.add("highlighted");
+                            map.setCenter(marker.getPosition());
+                        }
+                    });
+                    tableBody.appendChild(row);
+                });
+            };
         }
-    </script>
-    <script async
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBGNEgkzo-9QKOAvy2fo7fVGSnmqviyKcM&callback=initMap">
+
+        initMap();
     </script>
 </body>
 </html>

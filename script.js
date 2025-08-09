@@ -6,7 +6,7 @@ async function initMap() {
         apiKey = data.apiKey;
     } catch (error) {
         console.error("Failed to load API key:", error);
-        apiKey = 'YOUR_API_KEY';
+        apiKey = 'AIzaSyBGNEgkzo-9QKOAvy2fo7fVGSnmqviyKcM';
     }
 
     const script = document.createElement('script');

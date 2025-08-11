@@ -37,8 +37,10 @@ table {
 
 th, td {
     border: 1px solid #ddd;
-    padding: 8px;
+    padding: 18px;
     text-align: left;
+    font-size: .875rem;
+    line-height: 1.25rem;
 }
 
 th {

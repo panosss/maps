@@ -59,7 +59,7 @@ async function initMap() {
                             map: map,
                             title: location.title,
                             label: {
-                                text: location.label,
+                                text: location.id,
                                 color: "black",
                                 fontSize: "14px",
                                 fontWeight: "bold"
@@ -87,7 +87,7 @@ async function initMap() {
                             document.querySelectorAll("#table-body tr").forEach(row => {
                                 row.classList.remove("highlighted");
                             });
-                            const row = document.getElementById(`row-${location.label}`);
+                            const row = document.getElementById(`row-${location.id}`);
                             if (row) {
                                 row.classList.add("highlighted");
                                 const tableContainer = document.getElementById("table-container");
@@ -121,13 +121,13 @@ async function initMap() {
         const tableBody = document.getElementById("table-body");
         locations.forEach(location => {
             const row = document.createElement("tr");
-            row.id = `row-${location.label}`;
+            row.id = `row-${location.id}`;
             row.innerHTML = `
-                <td>${location.label}</td>
+                <td>${location.id}</td>
                 <td>${location.address && typeof location.address === 'string' ? location.address : 'N/A'}</td>
             `;
             row.addEventListener("click", () => {
-                const marker = markers.find(m => m.label.text === location.label);
+                const marker = markers.find(m => m.label.text === location.id);
                 if (marker) {
                     if (currentInfoWindow) {
                         currentInfoWindow.close();
